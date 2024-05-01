@@ -2,6 +2,6 @@ transactioner is a node service that does something very simple: it sends the mi
 
 in doing this, it acts as a "healthcheck" for a solana rpc node, such as the ones at [https://o7node.com]. 
 
-more documentation coming here soon
+you can generate two solana keys using `solana-keygen`, and set `.env` to point to them - defaults to `keys/key1.json` and `keys2.json`. must be private json keys, so be careful w/ them and consider them hot wallets (i.e. don't put a ton of sol in them)
 
 this code is super rough!
