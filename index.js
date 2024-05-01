@@ -1,4 +1,4 @@
-// require('dotenv').config()
+require('dotenv').config()
 
 const winston = require("winston");
 const logger = winston.createLogger({
@@ -15,7 +15,6 @@ const logger = winston.createLogger({
 const {
   ComputeBudgetProgram,
   Keypair,
-  PublicKey,
   sendAndConfirmTransaction,
   Connection,
   Transaction,
@@ -32,15 +31,15 @@ function loadKeypairFromFile(filename) {
 let success = 0;
 let total = 0;
 
-const key1 = loadKeypairFromFile("keys/key1.json");
-const key2 = loadKeypairFromFile("keys/key2.json");
+const key1 = loadKeypairFromFile(process.env.KEY1_PATH);
+const key2 = loadKeypairFromFile(process.env.KEY2_PATH);
 
-const priorityFee = 0;
-const waitTime = 10000;
+const priorityFee = number(process.env.PRIORITY_FEE || 0)
+const waitTime = Number(process.env.WAIT_TIME || 10000);
 
 logger.info("Loaded keys.");
-logger.info(`keys/key1.json: ${key1.publicKey}`);
-logger.info(`keys/key2.json: ${key2.publicKey}`);
+logger.info(`${process.env.KEY1_PATH}: ${key1.publicKey}`);
+logger.info(`${process.env.KEY2_PATH}: ${key2.publicKey}`);
 
 logger.info(
   `Configured to wait ${waitTime / 1000} seconds between transactions.`,
@@ -114,3 +113,5 @@ async function transferSolana() {
     }
   }
 }
+
+transferSolana()
