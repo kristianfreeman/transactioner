@@ -2,6 +2,10 @@
 
 const winston = require("winston");
 const logger = winston.createLogger({
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json(),
+  ),
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({ filename: "log" }),
@@ -31,7 +35,7 @@ let total = 0;
 const key1 = loadKeypairFromFile("keys/key1.json");
 const key2 = loadKeypairFromFile("keys/key2.json");
 
-const priorityFee = 20000;
+const priorityFee = 0;
 const waitTime = 10000;
 
 logger.info("Loaded keys.");
@@ -44,7 +48,7 @@ logger.info(
 logger.info(`Running with a priority fee of ${priorityFee} microlamports.`);
 
 async function transferSolana() {
-  const rpcUrl = "<NODE_URL>";
+  const rpcUrl = process.env.RPC_URL;
   const connection = new Connection(rpcUrl);
 
   const priorityFeePrice = ComputeBudgetProgram.setComputeUnitPrice({
@@ -52,8 +56,6 @@ async function transferSolana() {
   });
 
   while (true) {
-    logger.info(`Successful transactions: ${(success / total) * 100}%`);
-
     try {
       const transaction = new Transaction()
         .add(priorityFeePrice)
@@ -75,7 +77,9 @@ async function transferSolana() {
 
       success++;
       total++;
-      logger.info(`Successful transactions: ${(success / total) * 100}%`);
+      logger.info(
+        `Successful transactions (last 10min): ${(success / total) * 100}%`,
+      );
 
       await new Promise((resolve) => setTimeout(resolve, waitTime));
 
@@ -100,12 +104,13 @@ async function transferSolana() {
       await new Promise((resolve) => setTimeout(resolve, waitTime));
       success++;
       total++;
-      logger.info(`Successful transactions: ${(success / total) * 100}%`);
+      logger.info(
+        `Successful transactions (last 10min): ${(success / total) * 100}%`,
+      );
     } catch (err) {
       total++;
       logger.warn("Transaction failed");
+      logger.warn(err);
     }
   }
 }
-
-transferSolana();
