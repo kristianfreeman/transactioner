@@ -129,7 +129,6 @@ async function transferSolana() {
       logger.info('Transaction completed', stats2);
 
       logger.debug(`Waiting ${waitTime / 1000} seconds...`);
-
       await new Promise((resolve) => setTimeout(resolve, waitTime));
     } catch (err) {
       logger.warn("Transaction failed");
@@ -138,6 +137,9 @@ async function transferSolana() {
       transactionHistory.push({ timestamp, success: false });
       const stats = calculateSuccessRate();
       logger.info('Transaction completed', stats);
+
+      logger.debug(`Waiting ${waitTime / 1000} seconds...`);
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
     }
   }
 }
