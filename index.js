@@ -2,6 +2,7 @@ require('dotenv').config()
 
 const os = require("os");
 const hostname = process.env.HOSTNAME || os.hostname();
+const logFile = process.env.LOG_FILE || "./transactioner.log";
 
 const winston = require("winston");
 const logger = winston.createLogger({
@@ -12,7 +13,7 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: "transactioner.log" }),
+    new winston.transports.File({ filename: logFile }),
   ],
 });
 
