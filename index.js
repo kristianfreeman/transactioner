@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const os = require("os");
+const hostname = process.env.HOSTNAME || os.hostname();
 
 const winston = require("winston");
 const logger = winston.createLogger({
@@ -11,7 +12,7 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: "log" }),
+    new winston.transports.File({ filename: "transactioner.log" }),
   ],
 });
 
@@ -33,8 +34,6 @@ function loadKeypairFromFile(filename) {
 
 let success = 0;
 let total = 0;
-
-const hostname = process.env.HOSTNAME || os.hostname();
 
 const key1 = loadKeypairFromFile(process.env.KEY1_PATH);
 const key2 = loadKeypairFromFile(process.env.KEY2_PATH);
