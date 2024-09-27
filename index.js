@@ -33,9 +33,6 @@ function loadKeypairFromFile(filename) {
   return Keypair.fromSecretKey(secretKey);
 }
 
-let success = 0;
-let total = 0;
-
 const key1 = loadKeypairFromFile(process.env.KEY1_PATH);
 const key2 = loadKeypairFromFile(process.env.KEY2_PATH);
 
@@ -50,6 +47,29 @@ logger.info(
   `Configured to wait ${waitTime / 1000} seconds between transactions.`,
 );
 logger.info(`Running with a priority fee of ${priorityFee} microlamports.`);
+
+let transactionHistory = [];
+
+function calculateSuccessRate() {
+  const currentTime = Date.now();
+  const timeWindow = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+  // Filter transactionHistory to only include entries within the last 10 minutes
+  transactionHistory = transactionHistory.filter(
+    (entry) => currentTime - entry.timestamp <= timeWindow
+  );
+  const total = transactionHistory.length;
+  const successes = transactionHistory.filter((entry) => entry.success).length;
+  const successRate = total > 0 ? (successes / total) * 100 : 0;
+
+  // Return as JSON
+  return {
+    total_transactions: total,
+    successful_transactions: successes,
+    success_rate: successRate,
+    window_minutes: 10,
+  };
+}
 
 async function transferSolana() {
   const rpcUrl = process.env.RPC_URL;
@@ -77,14 +97,13 @@ async function transferSolana() {
         key1,
       ]);
       logger.info(`Completed. TX signature: ${tx1}`);
+
+      const timestamp1 = Date.now();
+      transactionHistory.push({ timestamp: timestamp1, success: true });
+      const stats1 = calculateSuccessRate();
+      logger.info('Transaction statistics', stats1);
+
       logger.info(`Waiting ${waitTime / 1000} seconds...`);
-
-      success++;
-      total++;
-      logger.info(
-        `Successful transactions (last 10min): ${(success / total) * 100}%`,
-      );
-
       await new Promise((resolve) => setTimeout(resolve, waitTime));
 
       const transaction2 = new Transaction()
@@ -103,20 +122,24 @@ async function transferSolana() {
         key2,
       ]);
       logger.info(`Completed. TX signature: ${tx2}`);
+
+      const timestamp2 = Date.now();
+      transactionHistory.push({ timestamp: timestamp2, success: true });
+      const stats2 = calculateSuccessRate();
+      logger.info('Transaction statistics', stats2);
+
       logger.info(`Waiting ${waitTime / 1000} seconds...`);
 
       await new Promise((resolve) => setTimeout(resolve, waitTime));
-      success++;
-      total++;
-      logger.info(
-        `Successful transactions (last 10min): ${(success / total) * 100}%`,
-      );
     } catch (err) {
-      total++;
       logger.warn("Transaction failed");
       logger.warn(err);
+      const timestamp = Date.now();
+      transactionHistory.push({ timestamp, success: false });
+      const stats = calculateSuccessRate();
+      logger.info('Transaction statistics', stats);
     }
   }
 }
 
-transferSolana()
+transferSolana();
