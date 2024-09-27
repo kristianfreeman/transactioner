@@ -1,7 +1,10 @@
 require('dotenv').config()
 
+const os = require("os");
+
 const winston = require("winston");
 const logger = winston.createLogger({
+  defaultMeta: { hostname },
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.json(),
@@ -31,10 +34,12 @@ function loadKeypairFromFile(filename) {
 let success = 0;
 let total = 0;
 
+const hostname = process.env.HOSTNAME || os.hostname();
+
 const key1 = loadKeypairFromFile(process.env.KEY1_PATH);
 const key2 = loadKeypairFromFile(process.env.KEY2_PATH);
 
-const priorityFee = number(process.env.PRIORITY_FEE || 0)
+const priorityFee = Number(process.env.PRIORITY_FEE || 0)
 const waitTime = Number(process.env.WAIT_TIME || 10000);
 
 logger.info("Loaded keys.");
