@@ -101,7 +101,7 @@ async function transferSolana() {
       const timestamp1 = Date.now();
       transactionHistory.push({ timestamp: timestamp1, success: true });
       const stats1 = calculateSuccessRate();
-      logger.info('Transaction statistics', stats1);
+      logger.info('Transaction completed', stats1);
 
       logger.debug(`Waiting ${waitTime / 1000} seconds...`);
       await new Promise((resolve) => setTimeout(resolve, waitTime));
@@ -126,7 +126,7 @@ async function transferSolana() {
       const timestamp2 = Date.now();
       transactionHistory.push({ timestamp: timestamp2, success: true });
       const stats2 = calculateSuccessRate();
-      logger.info('Transaction statistics', stats2);
+      logger.info('Transaction completed', stats2);
 
       logger.debug(`Waiting ${waitTime / 1000} seconds...`);
 
@@ -137,7 +137,7 @@ async function transferSolana() {
       const timestamp = Date.now();
       transactionHistory.push({ timestamp, success: false });
       const stats = calculateSuccessRate();
-      logger.info('Transaction statistics', stats);
+      logger.info('Transaction completed', stats);
     }
   }
 }
