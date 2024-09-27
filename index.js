@@ -39,14 +39,14 @@ const key2 = loadKeypairFromFile(process.env.KEY2_PATH);
 const priorityFee = Number(process.env.PRIORITY_FEE || 0)
 const waitTime = Number(process.env.WAIT_TIME || 10000);
 
-logger.info("Loaded keys.");
-logger.info(`${process.env.KEY1_PATH}: ${key1.publicKey}`);
-logger.info(`${process.env.KEY2_PATH}: ${key2.publicKey}`);
+logger.debug("Loaded keys.");
+logger.debug(`${process.env.KEY1_PATH}: ${key1.publicKey}`);
+logger.debug(`${process.env.KEY2_PATH}: ${key2.publicKey}`);
 
-logger.info(
+logger.debug(
   `Configured to wait ${waitTime / 1000} seconds between transactions.`,
 );
-logger.info(`Running with a priority fee of ${priorityFee} microlamports.`);
+logger.debug(`Running with a priority fee of ${priorityFee} microlamports.`);
 
 let transactionHistory = [];
 
@@ -91,19 +91,19 @@ async function transferSolana() {
           }),
         );
 
-      logger.info("Transferring from key1 to key2...");
+      logger.debug("Transferring from key1 to key2...");
 
       const tx1 = await sendAndConfirmTransaction(connection, transaction, [
         key1,
       ]);
-      logger.info(`Completed. TX signature: ${tx1}`);
+      logger.debug(`Completed. TX signature: ${tx1}`);
 
       const timestamp1 = Date.now();
       transactionHistory.push({ timestamp: timestamp1, success: true });
       const stats1 = calculateSuccessRate();
       logger.info('Transaction statistics', stats1);
 
-      logger.info(`Waiting ${waitTime / 1000} seconds...`);
+      logger.debug(`Waiting ${waitTime / 1000} seconds...`);
       await new Promise((resolve) => setTimeout(resolve, waitTime));
 
       const transaction2 = new Transaction()
@@ -116,19 +116,19 @@ async function transferSolana() {
           }),
         );
 
-      logger.info("Transferring from key2 to key1...");
+      logger.debug("Transferring from key2 to key1...");
 
       const tx2 = await sendAndConfirmTransaction(connection, transaction2, [
         key2,
       ]);
-      logger.info(`Completed. TX signature: ${tx2}`);
+      logger.debug(`Completed. TX signature: ${tx2}`);
 
       const timestamp2 = Date.now();
       transactionHistory.push({ timestamp: timestamp2, success: true });
       const stats2 = calculateSuccessRate();
       logger.info('Transaction statistics', stats2);
 
-      logger.info(`Waiting ${waitTime / 1000} seconds...`);
+      logger.debug(`Waiting ${waitTime / 1000} seconds...`);
 
       await new Promise((resolve) => setTimeout(resolve, waitTime));
     } catch (err) {
